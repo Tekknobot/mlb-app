@@ -4,6 +4,8 @@ import { Api, Game } from '@/services/api'
 import GameCard from '@/components/GameCard'
 import { ymdInTZ, userTZ } from '@/lib/tz'
 
+type DayBucket = { ymd: string; label: string; games: Game[] }
+
 export default function CalendarPage() {
   const [anchor, setAnchor] = useState(new Date())
 
@@ -14,16 +16,16 @@ export default function CalendarPage() {
   }, [anchor])
 
   const [loading, setLoading] = useState(false)
-  const [games, setGames] = useState<Game[]>([])
+  const [buckets, setBuckets] = useState<DayBucket[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let active = true
     setLoading(true); setError(null)
 
-    // Build the 7 local YMDs (strings) for the exact week
-    const dates = week.map(d => format(d, 'yyyy-MM-dd'))
-    const dateSet = new Set(dates) // <- exact membership check
+    // Build the 7 local YMDs
+    const ymds = week.map(d => format(d, 'yyyy-MM-dd'))
+    const dateSet = new Set(ymds)
 
     async function fetchAll(params: Parameters<typeof Api.games>[0]) {
       const out: Game[] = []
@@ -40,20 +42,34 @@ export default function CalendarPage() {
 
     async function load() {
       try {
-        // ✅ No postseason filter; fetch every page for those 7 dates
-        const all = await fetchAll({ dates, per_page: 500 })
+        // ✅ Do NOT filter by postseason; fetch every page for those dates
+        const all = await fetchAll({ dates: ymds, per_page: 500 })
 
-        // de-dupe by id
+        // de-dupe and sort
         const bag = new Map<number, Game>()
         for (const g of all) bag.set(g.id, g)
+        const list = Array.from(bag.values()).sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        )
 
-        // ✅ Keep a game iff its LOCAL YMD is one of the 7 day strings
-        const filtered = Array.from(bag.values())
-          .filter(g => dateSet.has( ymdInTZ(g.date, userTZ) ))
-          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        // Group by local YMD; ensure all 7 buckets exist
+        const byDay = new Map<string, Game[]>()
+        for (const g of list) {
+          const localYmd = ymdInTZ(g.date, userTZ)
+          if (!dateSet.has(localYmd)) continue // only this week
+          const arr = byDay.get(localYmd) || []
+          arr.push(g)
+          byDay.set(localYmd, arr)
+        }
+
+        const result: DayBucket[] = ymds.map(ymd => ({
+          ymd,
+          label: format(new Date(`${ymd}T12:00:00`), 'EEE, MMM d'),
+          games: byDay.get(ymd) || [],
+        }))
 
         if (!active) return
-        setGames(filtered)
+        setBuckets(result)
       } catch (e: any) {
         if (!active) return
         setError(e?.message || 'Failed to load games')
@@ -78,10 +94,24 @@ export default function CalendarPage() {
 
       {loading && <div className="text-center text-gray-500">Loading games…</div>}
       {error && <div className="text-center text-red-600">{error}</div>}
-      {!loading && !error && games.length === 0 && <div className="text-center text-gray-500">No games this week.</div>}
 
-      <div className="space-y-3">
-        {games.map(g => (<GameCard key={g.id} game={g} />))}
+      {!loading && !error && buckets.every(b => b.games.length === 0) && (
+        <div className="text-center text-gray-500">No games this week.</div>
+      )}
+
+      <div className="space-y-4">
+        {buckets.map(b => (
+          <section key={b.ymd} className="space-y-2">
+            <div className="text-sm text-gray-400">{b.label}</div>
+            {b.games.length === 0 ? (
+              <div className="text-gray-500 text-sm">No games.</div>
+            ) : (
+              <div className="space-y-3">
+                {b.games.map(g => <GameCard key={g.id} game={g} />)}
+              </div>
+            )}
+          </section>
+        ))}
       </div>
     </div>
   )
