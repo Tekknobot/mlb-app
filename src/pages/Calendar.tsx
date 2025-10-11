@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { addDays, format, startOfWeek } from 'date-fns'
 import { Api, Game } from '@/services/api'
 import GameCard from '@/components/GameCard'
-import { ymdInTZ, inRangeInTZ, userTZ } from '@/lib/tz'
+import { ymdInTZ, userTZ } from '@/lib/tz'
 
 export default function CalendarPage() {
   const [anchor, setAnchor] = useState(new Date())
@@ -23,27 +23,39 @@ export default function CalendarPage() {
     const startYmd = dates[0]
     const endYmd = dates[6]
 
+    async function fetchAll(params: Parameters<typeof Api.games>[0]) {
+      const bag: Game[] = []
+      let cursor: string | number | undefined = undefined
+      // guard against infinite loops; most weeks need 1–3 pages
+      for (let i = 0; i < 20; i++) {
+        const res = await Api.games({ ...params, cursor })
+        bag.push(...(res.data || []))
+        const next = res.meta?.next_cursor
+        if (!next) break
+        cursor = next
+      }
+      return bag
+    }
+
     async function load() {
       try {
-        // fetch both postseason and regular-season, then merge
-        const [post, reg] = await Promise.allSettled([
-          Api.games({ dates, postseason: true,  per_page: 500 }),
-          Api.games({ dates, postseason: false, per_page: 500 }),
+        // pull postseason + regular, fully paginated
+        const [post, reg] = await Promise.all([
+          fetchAll({ dates, postseason: true,  per_page: 500 }),
+          fetchAll({ dates, postseason: false, per_page: 500 }),
         ])
 
-        const a = post.status === 'fulfilled' ? (post.value.data || []) : []
-        const b = reg.status  === 'fulfilled' ? (reg.value.data  || []) : []
         // de-dupe by id
         const bag = new Map<number, Game>()
-        for (const g of [...a, ...b]) bag.set(g.id, g)
+        for (const g of [...post, ...reg]) bag.set(g.id, g)
 
-        // robust local-date filter (inclusive)
+        // inclusive local-date filter (use local YMD so Oct 12 stays Oct 12)
         const filtered = Array.from(bag.values())
           .filter(g => {
             const ymdLocal = ymdInTZ(g.date, userTZ)
             return ymdLocal >= startYmd && ymdLocal <= endYmd
           })
-          .sort((x, y) => new Date(x.date).getTime() - new Date(y.date).getTime())
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
         if (!active) return
         setGames(filtered)
