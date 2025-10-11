@@ -11,7 +11,7 @@ export default function TermsPage() {
       <section className="card space-y-2">
         <div className="text-xs text-gray-400">Last updated: Oct 11, 2025</div>
         <p className="text-gray-200">
-          By accessing or using SLUG (the “Service”),
+          By accessing or using SLUGMODE (the “Service”),
           you agree to these Terms. If you do not agree, do not use the Service.
         </p>
       </section>

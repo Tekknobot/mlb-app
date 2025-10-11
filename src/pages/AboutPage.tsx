@@ -10,7 +10,7 @@ export default function AboutPage() {
 
       <section className="card space-y-2">
         <p>
-          SLUG is a lightweight baseball scoreboard and
+          SLUGMODE is a lightweight baseball scoreboard and
           game browser. It pulls fixtures and results, summarizes recent form,
           and gives you a clean, mobile-friendly way to follow matchups.
         </p>

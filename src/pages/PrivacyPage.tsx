@@ -11,7 +11,7 @@ export default function PrivacyPage() {
       <section className="card space-y-2">
         <div className="text-xs text-gray-400">Last updated: Oct 11, 2025</div>
         <p className="text-gray-200">
-          This Privacy Policy explains how SLUG (“we”, “us”) handles your information.
+          This Privacy Policy explains how SLUGMODE handles your information.
           In short: we don’t collect personal data, we don’t run analytics, we don’t use tracking cookies, and we don’t have user accounts.
         </p>
       </section>

@@ -54,7 +54,7 @@ export default function NavBar() {
               />
             </svg>
             {/* App short name */}
-            SLUG
+            SLUGMODE
           </Link>
 
           <ul className="flex items-center gap-2 text-sm">
