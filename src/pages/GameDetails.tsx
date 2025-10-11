@@ -529,6 +529,7 @@ export default function GameDetailsPage() {
               <StatRow label="Record" value={`${awayForm.wins}-${awayForm.losses}`} />
               <StatRow label="Streak" value={awayForm.streak} />
               <StatRow label="Run diff" value={`${awayForm.runsFor - awayForm.runsAgainst >= 0 ? '+' : ''}${awayForm.runsFor - awayForm.runsAgainst}`} />
+              <StatRow label="Last 5" value={awayForm.last5 || '—'} /> {/* ✅ added */}
               <div className="hr-seam" />
               <TinyGamesList games={recentAway.data} focusTeamId={awayId} />
             </div>
