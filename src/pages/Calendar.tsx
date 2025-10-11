@@ -6,6 +6,8 @@ import { ymdInTZ, userTZ } from '@/lib/tz'
 
 export default function CalendarPage() {
   const [anchor, setAnchor] = useState(new Date())
+
+  // Mon–Sun week
   const week = useMemo(() => {
     const s = startOfWeek(anchor, { weekStartsOn: 1 })
     return Array.from({ length: 7 }).map((_, i) => addDays(s, i))
@@ -19,13 +21,13 @@ export default function CalendarPage() {
     let active = true
     setLoading(true); setError(null)
 
+    // Build the 7 local YMDs (strings) for the exact week
     const dates = week.map(d => format(d, 'yyyy-MM-dd'))
-    const startYmd = dates[0]
-    const endYmd = dates[6]
+    const dateSet = new Set(dates) // <- exact membership check
 
     async function fetchAll(params: Parameters<typeof Api.games>[0]) {
       const out: Game[] = []
-      let cursor: string | number | undefined = undefined
+      let cursor: string | number | undefined
       for (let i = 0; i < 20; i++) {
         const res = await Api.games({ ...params, cursor })
         out.push(...(res.data || []))
@@ -38,19 +40,16 @@ export default function CalendarPage() {
 
     async function load() {
       try {
-        // ✅ single query WITHOUT 'postseason' filter; paginate all cursors
+        // ✅ No postseason filter; fetch every page for those 7 dates
         const all = await fetchAll({ dates, per_page: 500 })
 
-        // de-dupe just in case
+        // de-dupe by id
         const bag = new Map<number, Game>()
         for (const g of all) bag.set(g.id, g)
 
-        // ✅ inclusive filter by LOCAL YMD so the 7th day is not lost to UTC shifts
+        // ✅ Keep a game iff its LOCAL YMD is one of the 7 day strings
         const filtered = Array.from(bag.values())
-          .filter(g => {
-            const ymdLocal = ymdInTZ(g.date, userTZ)
-            return ymdLocal >= startYmd && ymdLocal <= endYmd
-          })
+          .filter(g => dateSet.has( ymdInTZ(g.date, userTZ) ))
           .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
         if (!active) return
