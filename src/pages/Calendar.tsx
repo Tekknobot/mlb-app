@@ -24,32 +24,28 @@ export default function CalendarPage() {
     const endYmd = dates[6]
 
     async function fetchAll(params: Parameters<typeof Api.games>[0]) {
-      const bag: Game[] = []
+      const out: Game[] = []
       let cursor: string | number | undefined = undefined
-      // guard against infinite loops; most weeks need 1–3 pages
       for (let i = 0; i < 20; i++) {
         const res = await Api.games({ ...params, cursor })
-        bag.push(...(res.data || []))
+        out.push(...(res.data || []))
         const next = res.meta?.next_cursor
         if (!next) break
         cursor = next
       }
-      return bag
+      return out
     }
 
     async function load() {
       try {
-        // pull postseason + regular, fully paginated
-        const [post, reg] = await Promise.all([
-          fetchAll({ dates, postseason: true,  per_page: 500 }),
-          fetchAll({ dates, postseason: false, per_page: 500 }),
-        ])
+        // ✅ single query WITHOUT 'postseason' filter; paginate all cursors
+        const all = await fetchAll({ dates, per_page: 500 })
 
-        // de-dupe by id
+        // de-dupe just in case
         const bag = new Map<number, Game>()
-        for (const g of [...post, ...reg]) bag.set(g.id, g)
+        for (const g of all) bag.set(g.id, g)
 
-        // inclusive local-date filter (use local YMD so Oct 12 stays Oct 12)
+        // ✅ inclusive filter by LOCAL YMD so the 7th day is not lost to UTC shifts
         const filtered = Array.from(bag.values())
           .filter(g => {
             const ymdLocal = ymdInTZ(g.date, userTZ)
@@ -59,9 +55,9 @@ export default function CalendarPage() {
 
         if (!active) return
         setGames(filtered)
-      } catch (err: any) {
+      } catch (e: any) {
         if (!active) return
-        setError(err?.message || 'Failed to load games')
+        setError(e?.message || 'Failed to load games')
       } finally {
         if (active) setLoading(false)
       }
