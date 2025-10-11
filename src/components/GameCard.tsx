@@ -1,14 +1,11 @@
 import { Link } from 'react-router-dom'
 import { Game } from '@/services/api'
 import { format } from 'date-fns'
+import { ymdInTZ, userTZ } from '@/lib/tz' // ✅ use local timezone YMD
 
 // If you’re passing forceYmd, keep that for labels to avoid TZ drift
 function labelFromYmd(ymd: string) {
   return format(new Date(`${ymd}T12:00:00`), 'EEE, MMM d')
-}
-function labelFromISO(iso: string) {
-  const ymd = (iso ?? '').slice(0, 10)
-  return labelFromYmd(ymd)
 }
 
 /** Primary color map (MLB 30 teams). Tweak to taste. */
@@ -33,9 +30,8 @@ function contrastText(hex: string): string {
   const r = parseInt(c.substring(0, 2), 16)
   const g = parseInt(c.substring(2, 4), 16)
   const b = parseInt(c.substring(4, 6), 16)
-  // YIQ luma
   const yiq = (r * 299 + g * 587 + b * 114) / 1000
-  return yiq >= 160 ? '#111827' /* slate-900-ish */ : '#ffffff'
+  return yiq >= 160 ? '#111827' : '#ffffff'
 }
 
 function teamAbbr(team?: { abbreviation?: string; display_name?: string }): string {
@@ -43,7 +39,6 @@ function teamAbbr(team?: { abbreviation?: string; display_name?: string }): stri
   if (team.abbreviation) return team.abbreviation.toUpperCase()
   const dn = (team.display_name || '').trim()
   if (!dn) return '—'
-  // simple initials
   return dn.split(/\s+/).map(s => s[0]).join('').slice(0, 3).toUpperCase()
 }
 
@@ -53,11 +48,7 @@ function TeamPill({ abbr }: { abbr: string }) {
   return (
     <span
       className="pill"
-      style={{
-        backgroundColor: color,
-        color: text,
-        border: '1px solid rgba(255,255,255,0.25)',
-      }}
+      style={{ backgroundColor: color, color: text, border: '1px solid rgba(255,255,255,0.25)' }}
       title={abbr}
     >
       {abbr}
@@ -72,9 +63,14 @@ export default function GameCard({
   game: Game
   forceYmd?: string
 }) {
-  const label = forceYmd ? labelFromYmd(forceYmd) : labelFromISO(game.date)
-  const dateParam = encodeURIComponent(forceYmd ?? (game.date ?? '').slice(0, 10))
-  const url = `/game/${game.id}?date=${dateParam}&homeId=${game.home_team.id}${game.visitor_team ? `&awayId=${game.visitor_team.id}` : ''}`
+  // ✅ Use local-time YMD for display & links (unless a forceYmd is provided)
+  const ymdLocal = forceYmd ?? ymdInTZ(game.date, userTZ)
+  const label = labelFromYmd(ymdLocal)
+  const dateParam = encodeURIComponent(ymdLocal)
+
+  const url = `/game/${game.id}?date=${dateParam}&homeId=${game.home_team.id}${
+    game.visitor_team ? `&awayId=${game.visitor_team.id}` : ''
+  }`
 
   // status string for pill + CSS selector
   const statusLabel = (game as any)?.status || 'Scheduled'
