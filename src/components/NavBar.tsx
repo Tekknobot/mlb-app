@@ -14,17 +14,6 @@ const secondaryTabs = [
   { to: '/privacy', label: 'Privacy' },
 ] as const
 
-function BallMark() {
-  return (
-    <svg width="34" height="34" viewBox="0 0 64 64" fill="none" aria-hidden="true" className="shrink-0">
-      <circle cx="24" cy="24" r="15" fill="#F8FAFC" />
-      <circle cx="40" cy="24" r="15" fill="#CC2B3A" />
-      <circle cx="32" cy="40" r="15" fill="#5B7FA8" />
-      <circle cx="32" cy="30" r="5.5" fill="#0F2437" />
-    </svg>
-  )
-}
-
 function NavLink({ to, label, active, compact = false }: { to: string; label: string; active: boolean; compact?: boolean }) {
   return (
     <Link
@@ -53,11 +42,20 @@ export default function NavBar() {
     <>
       <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/10 bg-outfield/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="flex min-w-0 items-center gap-3">
-            <BallMark />
+          <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="Slugline home">
+            <img
+              src="/favicon.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-9 w-9 shrink-0 object-contain"
+            />
             <div className="min-w-0">
-              <div className="truncate text-sm font-black uppercase tracking-[0.22em] text-white">Slugline</div>
-              <div className="truncate text-xs text-gray-400">Daily baseball board • scores, matchups, teams, players</div>
+              <img
+                src="/logo.svg"
+                alt="Slugline"
+                className="h-6 w-auto max-w-[150px] object-contain object-left sm:h-7 sm:max-w-[180px]"
+              />
+              <div className="mt-0.5 hidden truncate text-xs text-gray-400 sm:block">Daily baseball board • scores, matchups, teams, players</div>
             </div>
           </Link>
 

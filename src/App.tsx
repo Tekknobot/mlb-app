@@ -29,9 +29,12 @@ function Footer() {
   return (
     <footer className="border-t border-white/10 bg-outfield/40">
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6 text-sm text-gray-400 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-        <div>
-          <div className="font-semibold text-gray-200">Slugline</div>
-          <div>Grid-first baseball scoreboard, teams and player tracker powered by public MLB data.</div>
+        <div className="flex items-center gap-3">
+          <img src="/favicon.svg" alt="" aria-hidden="true" className="h-8 w-8 shrink-0 object-contain" />
+          <div>
+            <img src="/logo.svg" alt="Slugline" className="h-5 w-auto max-w-[130px] object-contain object-left" />
+            <div className="mt-1">Grid-first baseball scoreboard, teams and player tracker powered by public MLB data.</div>
+          </div>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link to="/about" className="hover:text-white">About</Link>
