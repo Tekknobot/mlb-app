@@ -26,6 +26,11 @@ export default function AboutPage() {
       <section className="card space-y-2">
         <h2 className="font-semibold">Attribution</h2>
         <p className="text-gray-200">
+          Game, team, roster and statistical data are retrieved from MLB's public
+          StatsAPI endpoints. No SLUGMODE account or third-party sports-data API key
+          is required.
+        </p>
+        <p className="text-gray-200">
           Team names and related marks are trademarks of their respective owners
           and are used here for informational purposes only. This app is not
           affiliated with or endorsed by any league or team.

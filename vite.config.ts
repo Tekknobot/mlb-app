@@ -7,11 +7,11 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // ✅ DEV: /api → https://api.balldontlie.io/mlb/v1/...
-      '/api': {
-        target: 'https://api.balldontlie.io',
+      // No key/login: local dev proxy for MLB StatsAPI.
+      '/mlb-api': {
+        target: 'https://statsapi.mlb.com',
         changeOrigin: true,
-        rewrite: p => p.replace(/^\/api/, '/mlb/v1'),
+        rewrite: p => p.replace(/^\/mlb-api/, '/api'),
       },
     },
   },

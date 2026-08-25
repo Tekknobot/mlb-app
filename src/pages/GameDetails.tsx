@@ -56,8 +56,7 @@ function normalizeGame(rawIn: AnyGame): Game {
   const home_team =
     firstVal(raw, ['home_team', 'home', 'homeTeam']) ?? null
 
-  // Official BDL-MLB payload puts runs here:
-  //   home_team_data.runs / away_team_data.runs
+  // Compatibility paths retained for older cached game shapes; the new MLB client already normalizes scores.
   const visitor_team_score =
     firstNum(raw, [
       'visitor_team_score',
@@ -305,8 +304,8 @@ async function loadGameSmart(
     try {
       const g = await Api.game(Number(id))
       if ((g as any)?.id != null) {
-        const n = normalizeGame(g as AnyGame)
-        bag.set(n.id, n)
+        // A successful gamePk lookup is authoritative; avoid unnecessary date/team/season sweeps.
+        return normalizeGame(g as AnyGame)
       }
     } catch {}
   }
