@@ -16,7 +16,7 @@ export default function PrivacyPage() {
       <section className="card space-y-3">
         <div className="text-xs text-gray-400">Last updated: Aug 25, 2026</div>
         <p className="text-gray-200">
-          This Privacy Policy explains how PennantGrid handles your information.
+          This Privacy Policy explains how Slugline handles your information.
           In short: there are no user accounts, no third-party sports-data logins, and no intentional personal data collection.
         </p>
       </section>

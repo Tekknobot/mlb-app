@@ -16,12 +16,14 @@ const secondaryTabs = [
 
 function BallMark() {
   return (
-    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0">
-      <circle cx="12" cy="12" r="9" className="stroke-gray-200/90" strokeWidth="1.4" />
-      <path d="M6.2 6.2c2.5 2.5 2.5 9.1 0 11.6" className="stroke-seam" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M17.8 6.2c-2.5 2.5-2.5 9.1 0 11.6" className="stroke-seam" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M7.4 8.4l1.6 1.2M7.1 10.5l1.9.7M7.1 13l1.9-.7M7.4 15.2l1.6-1.2" className="stroke-seam/80" strokeWidth="1.2" strokeLinecap="round" />
-      <path d="M16.6 8.4l-1.6 1.2M16.9 10.5l-1.9.7M16.9 13l-1.9-.7M16.6 15.2l-1.6-1.2" className="stroke-seam/80" strokeWidth="1.2" strokeLinecap="round" />
+    <svg width="34" height="34" viewBox="0 0 64 64" fill="none" aria-hidden="true" className="shrink-0">
+      <rect x="4" y="4" width="56" height="56" rx="16" fill="#102338" />
+      <circle cx="32" cy="32" r="18.5" fill="#fffaf2" />
+      <path d="M22.5 18.5c5.1 4.5 5.1 22.5 0 27" fill="none" stroke="#cc2b3a" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M41.5 18.5c-5.1 4.5-5.1 22.5 0 27" fill="none" stroke="#cc2b3a" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M24.5 22.6l2.2 1.6M23.9 26l2.6 1M23.9 30.1l2.6-.9M24.5 34.1l2.2-1.6M39.5 22.6l-2.2 1.6M40.1 26l-2.6 1M40.1 30.1l-2.6-.9M39.5 34.1l-2.2-1.6" fill="none" stroke="#cc2b3a" strokeWidth="1.45" strokeLinecap="round" />
+      <path d="M36.6 22.8c-1.4-1.5-3.3-2.3-5.6-2.3-3.8 0-6.8 2-6.8 5 0 2.8 2 4 6 4.7 2.9.5 4 1.1 4 2.4 0 1.4-1.5 2.4-3.9 2.4-2.5 0-4.8-.8-6.8-2.5" fill="none" stroke="#13283f" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M31.2 18.7v3.1M31.2 42.2v3.1" fill="none" stroke="#13283f" strokeWidth="3.2" strokeLinecap="round" />
     </svg>
   )
 }
@@ -57,8 +59,8 @@ export default function NavBar() {
           <Link to="/" className="flex min-w-0 items-center gap-3">
             <BallMark />
             <div className="min-w-0">
-              <div className="truncate text-sm font-black uppercase tracking-[0.22em] text-white">PennantGrid</div>
-              <div className="truncate text-xs text-gray-400">Mobile-first MLB scoreboard & matchup tracker</div>
+              <div className="truncate text-sm font-black uppercase tracking-[0.22em] text-white">Slugline</div>
+              <div className="truncate text-xs text-gray-400">Daily baseball board • scores, matchups, teams, players</div>
             </div>
           </Link>
 

@@ -16,7 +16,7 @@ export default function TermsPage() {
       <section className="card space-y-3">
         <div className="text-xs text-gray-400">Last updated: Aug 25, 2026</div>
         <p className="text-gray-200">
-          By accessing or using PennantGrid (the “Service”), you agree to these Terms. If you do not agree,
+          By accessing or using Slugline (the “Service”), you agree to these Terms. If you do not agree,
           please do not use the Service.
         </p>
       </section>

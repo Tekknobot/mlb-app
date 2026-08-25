@@ -95,9 +95,9 @@ export default function CalendarPage() {
         <div className="grid gap-6 p-5 lg:grid-cols-[1.25fr_0.9fr] lg:p-6">
           <div>
             <div className="eyebrow">Dashboard</div>
-            <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">PennantGrid</h1>
+            <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">Slugline</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-300 sm:text-base">
-              A redesigned grid-first MLB board for weekly schedules, live score tracking, teams and player browsing — tuned for desktop and mobile.
+              A grid-first baseball board for weekly schedules, live score tracking, team browsing, and player stats — tuned for desktop and mobile.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <span className="pill">Public MLB data</span>
