@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Game } from '@/services/api'
 import { ymdInTZ, userTZ } from '@/lib/tz'
 import TeamLogo from '@/components/TeamLogo'
-import { teamAbbr } from '@/lib/mlb-assets'
+import { teamAbbr, teamColor } from '@/lib/mlb-assets'
 
 function gameTimeLabel(iso?: string, status?: string) {
   if (!iso) return status || 'Scheduled'
@@ -22,12 +22,12 @@ function TeamRow({
 }) {
   const abbr = teamAbbr(team)
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-white/8 bg-white/[0.04] p-3">
+    <div className="flex items-center gap-3 rounded-2xl border border-white/[0.15] bg-black/20 p-3 backdrop-blur-[1px]">
       <TeamLogo team={team} size={42} />
       <div className="min-w-0 flex-1">
-        <div className="text-[11px] uppercase tracking-[0.16em] text-gray-400">{side}</div>
+        <div className="text-[11px] uppercase tracking-[0.16em] text-white/[0.65]">{side}</div>
         <div className="truncate font-semibold text-white">{team?.full_name || team?.display_name || '—'}</div>
-        <div className="text-xs text-gray-400">{abbr}</div>
+        <div className="text-xs text-white/[0.65]">{abbr}</div>
       </div>
       <div className="text-3xl font-black tracking-tight text-white">{score ?? '—'}</div>
     </div>
@@ -40,14 +40,19 @@ export default function GameCard({ game, forceYmd }: { game: Game; forceYmd?: st
   const dateParam = encodeURIComponent(ymdLocal)
   const url = `/game/${game.id}?date=${dateParam}&homeId=${game.home_team.id}${game.visitor_team ? `&awayId=${game.visitor_team.id}` : ''}`
   const statusLabel = game.status || 'Scheduled'
+  const homeColor = teamColor(game.home_team)
+  const panelBackground = `linear-gradient(145deg, rgba(4, 10, 18, 0.26), rgba(4, 10, 18, 0.48)), ${homeColor}`
 
   return (
     <Link to={url} className="block h-full">
-      <div className="card h-full transition duration-150 hover:-translate-y-0.5 hover:border-white/20 hover:bg-infield">
+      <div
+        className="card h-full border-white/[0.20] transition duration-150 hover:-translate-y-0.5 hover:border-white/[0.35]"
+        style={{ background: panelBackground }}
+      >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <div className="text-sm font-semibold text-white">{label}</div>
-            <div className="text-xs text-gray-400">Game #{game.id}</div>
+            <div className="text-xs text-white/[0.65]">Game #{game.id}</div>
           </div>
           <div className="flex items-center gap-2">
             <span className="pill" data-status={statusLabel}>{statusLabel}</span>

@@ -17,13 +17,10 @@ const secondaryTabs = [
 function BallMark() {
   return (
     <svg width="34" height="34" viewBox="0 0 64 64" fill="none" aria-hidden="true" className="shrink-0">
-      <rect x="4" y="4" width="56" height="56" rx="16" fill="#102338" />
-      <circle cx="32" cy="32" r="18.5" fill="#fffaf2" />
-      <path d="M22.5 18.5c5.1 4.5 5.1 22.5 0 27" fill="none" stroke="#cc2b3a" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M41.5 18.5c-5.1 4.5-5.1 22.5 0 27" fill="none" stroke="#cc2b3a" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M24.5 22.6l2.2 1.6M23.9 26l2.6 1M23.9 30.1l2.6-.9M24.5 34.1l2.2-1.6M39.5 22.6l-2.2 1.6M40.1 26l-2.6 1M40.1 30.1l-2.6-.9M39.5 34.1l-2.2-1.6" fill="none" stroke="#cc2b3a" strokeWidth="1.45" strokeLinecap="round" />
-      <path d="M36.6 22.8c-1.4-1.5-3.3-2.3-5.6-2.3-3.8 0-6.8 2-6.8 5 0 2.8 2 4 6 4.7 2.9.5 4 1.1 4 2.4 0 1.4-1.5 2.4-3.9 2.4-2.5 0-4.8-.8-6.8-2.5" fill="none" stroke="#13283f" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M31.2 18.7v3.1M31.2 42.2v3.1" fill="none" stroke="#13283f" strokeWidth="3.2" strokeLinecap="round" />
+      <circle cx="24" cy="24" r="15" fill="#F8FAFC" />
+      <circle cx="40" cy="24" r="15" fill="#CC2B3A" />
+      <circle cx="32" cy="40" r="15" fill="#5B7FA8" />
+      <circle cx="32" cy="30" r="5.5" fill="#0F2437" />
     </svg>
   )
 }
