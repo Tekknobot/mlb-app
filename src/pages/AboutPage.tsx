@@ -2,38 +2,37 @@ import { Link } from 'react-router-dom'
 
 export default function AboutPage() {
   return (
-    <div className="p-3 max-w-2xl mx-auto space-y-3 pb-20">
-      <header className="flex items-center justify-between">
-        <h1 className="font-semibold">About</h1>
-        <Link to="/" className="btn-ghost">Back</Link>
+    <div className="space-y-5 pb-4">
+      <header className="card-panel p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="eyebrow">About</div>
+            <h1 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl">About PennantGrid</h1>
+            <p className="mt-2 max-w-2xl text-sm text-gray-300">PennantGrid is the redesigned form of this app: a grid-based, mobile-friendly MLB board for schedules, matchups, teams and players.</p>
+          </div>
+          <Link to="/" className="btn-ghost">Back to dashboard</Link>
+        </div>
       </header>
 
-      <section className="card space-y-2">
-        <p>
-          SLUGMODE is a lightweight baseball scoreboard and
-          game browser. It pulls fixtures and results, summarizes recent form,
-          and gives you a clean, mobile-friendly way to follow matchups.
-        </p>
-        <div className="hr-seam" />
-        <ul className="list-disc pl-6 space-y-1 text-gray-200">
-          <li>Fast calendar view of upcoming and recent games</li>
-          <li>Compact game cards with status and scores</li>
-          <li>Color-coded team abbreviation pills</li>
-          <li>Simple, dark, accessible UI</li>
+      <section className="card space-y-3">
+        <h2 className="section-title">What it includes</h2>
+        <ul className="grid gap-3 text-gray-200 sm:grid-cols-2">
+          <li className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">Weekly scoreboard dashboard with a grid layout</li>
+          <li className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">Daily matchup filtering by date and team</li>
+          <li className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">Team logos and club directory cards</li>
+          <li className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">Player headshots and core hitting / pitching stats</li>
         </ul>
       </section>
 
-      <section className="card space-y-2">
-        <h2 className="font-semibold">Attribution</h2>
+      <section className="card space-y-3">
+        <h2 className="section-title">Data source</h2>
         <p className="text-gray-200">
-          Game, team, roster and statistical data are retrieved from MLB's public
-          StatsAPI endpoints. No SLUGMODE account or third-party sports-data API key
-          is required.
+          Game, team, roster and statistical data are retrieved from MLB&apos;s public StatsAPI endpoints.
+          No PennantGrid account or third-party sports-data API key is required.
         </p>
         <p className="text-gray-200">
-          Team names and related marks are trademarks of their respective owners
-          and are used here for informational purposes only. This app is not
-          affiliated with or endorsed by any league or team.
+          Team names, player images and related marks remain the property of their respective owners and are shown here for informational purposes only.
+          This app is not affiliated with or endorsed by MLB or any club.
         </p>
       </section>
     </div>

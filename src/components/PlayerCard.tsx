@@ -1,15 +1,14 @@
 import { Player } from '@/services/api'
+import PlayerHeadshot from '@/components/PlayerHeadshot'
+import TeamLogo from '@/components/TeamLogo'
 
 function posCode(p?: Player) {
-  const raw = (p?.position || '').toString().trim().toUpperCase()
-  return raw
+  return (p?.position || '').toString().trim().toUpperCase()
 }
 
 function isPitcher(p: Player) {
   const code = posCode(p)
-  // Common pitching role codes
   if (code === 'P' || code === 'SP' || code === 'RP' || code === 'CL') return true
-  // Or infer from pitching stats
   return p.era != null || p.so != null || p.whip != null
 }
 
@@ -25,55 +24,51 @@ function formatEra(era?: number | string) {
   return Number.isFinite(n) ? n.toFixed(2) : '—'
 }
 
+function StatBlock({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-center">
+      <div className="text-[11px] uppercase tracking-[0.18em] text-gray-400">{label}</div>
+      <div className="mt-1 text-xl font-black tracking-tight text-white">{value}</div>
+    </div>
+  )
+}
+
 export default function PlayerCard({ p }: { p: Player }) {
   const name = `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim() || p.full_name || '—'
-  const teamName = p.team?.full_name || p.team?.display_name || '—'
+  const teamName = p.team?.full_name || p.team?.display_name || 'Free Agent'
   const pitcher = isPitcher(p)
 
   return (
-    <div className="card">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="font-semibold">{name}</div>
-          <div className="text-xs text-gray-500">{teamName}</div>
+    <div className="card h-full">
+      <div className="flex items-start gap-4">
+        <PlayerHeadshot playerId={p.id} name={name} size={74} />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="truncate text-lg font-bold text-white">{name}</h3>
+            {p.position && <span className="pill">{p.position}</span>}
+          </div>
+          <div className="mt-2 flex items-center gap-2 text-sm text-gray-400">
+            {p.team && <TeamLogo team={p.team} size={28} />}
+            <span className="truncate">{teamName}</span>
+          </div>
         </div>
-        {p.position && <span className="pill">{p.position}</span>}
       </div>
 
-      {/* Stats */}
-      {pitcher ? (
-        // Pitcher: SO / ERA / WHIP
-        <div className="grid grid-cols-3 gap-3 text-center mt-3 text-sm">
-          <div>
-            <div className="text-gray-500">SO</div>
-            <div className="font-semibold">{p.so ?? '—'}</div>
-          </div>
-          <div>
-            <div className="text-gray-500">ERA</div>
-            <div className="font-semibold">{formatEra(p.era)}</div>
-          </div>
-          <div>
-            <div className="text-gray-500">WHIP</div>
-            <div className="font-semibold">{p.whip ?? '—'}</div>
-          </div>
-        </div>
-      ) : (
-        // Hitter: HR / AVG / RBI
-        <div className="grid grid-cols-3 gap-3 text-center mt-3 text-sm">
-          <div>
-            <div className="text-gray-500">HR</div>
-            <div className="font-semibold">{p.hr ?? '—'}</div>
-          </div>
-          <div>
-            <div className="text-gray-500">AVG</div>
-            <div className="font-semibold">{formatAvg(p.avg)}</div>
-          </div>
-          <div>
-            <div className="text-gray-500">RBI</div>
-            <div className="font-semibold">{p.rbi ?? '—'}</div>
-          </div>
-        </div>
-      )}
+      <div className="mt-4 grid grid-cols-3 gap-3">
+        {pitcher ? (
+          <>
+            <StatBlock label="SO" value={p.so ?? '—'} />
+            <StatBlock label="ERA" value={formatEra(p.era)} />
+            <StatBlock label="WHIP" value={p.whip ?? '—'} />
+          </>
+        ) : (
+          <>
+            <StatBlock label="HR" value={p.hr ?? '—'} />
+            <StatBlock label="AVG" value={formatAvg(p.avg)} />
+            <StatBlock label="RBI" value={p.rbi ?? '—'} />
+          </>
+        )}
+      </div>
     </div>
   )
 }

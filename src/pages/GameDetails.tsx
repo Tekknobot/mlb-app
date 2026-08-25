@@ -6,6 +6,7 @@ import { Api, Game, Team } from '@/services/api'
 import { gamesForTeamSmart, gamesInWindowFilterLocal } from '@/services/api'
 import { format, subDays, eachDayOfInterval } from 'date-fns'
 import { ymdInTZ, userTZ } from '@/lib/tz'
+import TeamLogo from '@/components/TeamLogo'
 
 // ----------------------- debug toggles -----------------------
 const DEBUG = import.meta.env.VITE_DEBUG === '1'
@@ -452,11 +453,16 @@ export default function GameDetailsPage() {
   }, [homeForm, awayForm])
 
   return (
-    <div className="p-3 space-y-3">
-      <div className="flex items-center justify-between">
-        <h1 className="font-semibold">{title}</h1>
-        <Link to="/" className="btn-ghost">Back</Link>
-      </div>
+    <div className="space-y-5 pb-4">
+      <header className="card-panel p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="eyebrow">Game details</div>
+            <h1 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl">{title}</h1>
+          </div>
+          <Link to="/" className="btn-ghost">Back to dashboard</Link>
+        </div>
+      </header>
 
       {/* Matchup header */}
       <Section title="Matchup">
@@ -469,20 +475,30 @@ export default function GameDetailsPage() {
             const awayProb = winProbHome != null ? 1 - winProbHome : null
             return (
               <>
-                <div className="grid grid-cols-2 gap-3 items-center">
-                  <div className="text-right">
-                    <div className="text-sm text-gray-400">Away ({abbr(gd.visitor_team)})</div>
-                    <div className="font-bold">{gd.visitor_team?.full_name || gd.visitor_team?.display_name}</div>
-                    <div className="text-2xl font-bold">{gd.visitor_team_score ?? ''}</div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+                    <div className="flex items-center gap-3">
+                      <TeamLogo team={gd.visitor_team} size={54} ring />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs uppercase tracking-[0.18em] text-gray-400">Away • {abbr(gd.visitor_team)}</div>
+                        <div className="truncate text-lg font-bold text-white">{gd.visitor_team?.full_name || gd.visitor_team?.display_name}</div>
+                      </div>
+                      <div className="text-4xl font-black tracking-tight text-white">{gd.visitor_team_score ?? '—'}</div>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <div className="text-sm text-gray-400">Home ({abbr(gd.home_team)})</div>
-                    <div className="font-bold">{gd.home_team?.full_name || gd.home_team?.display_name}</div>
-                    <div className="text-2xl font-bold">{gd.home_team_score ?? ''}</div>
+                  <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+                    <div className="flex items-center gap-3">
+                      <TeamLogo team={gd.home_team} size={54} ring />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs uppercase tracking-[0.18em] text-gray-400">Home • {abbr(gd.home_team)}</div>
+                        <div className="truncate text-lg font-bold text-white">{gd.home_team?.full_name || gd.home_team?.display_name}</div>
+                      </div>
+                      <div className="text-4xl font-black tracking-tight text-white">{gd.home_team_score ?? '—'}</div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="mt-2 flex items-center gap-2 flex-wrap">
+                <div className="mt-3 flex items-center gap-2 flex-wrap">
                   {/* colored status */}
                   <StatusPill status={gd.status} />
                   {winProbHome != null && (

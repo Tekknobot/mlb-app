@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Api, Game, Team } from '@/services/api'
 import GameCard from '@/components/GameCard'
 import { ymdInTZ, userTZ } from '@/lib/tz'
 import { format } from 'date-fns'
 
-// Local YYYY-MM-DD for <input type="date">
 const todayLocal = () => format(new Date(), 'yyyy-MM-dd')
 
 export default function MatchupsPage() {
@@ -22,21 +21,16 @@ export default function MatchupsPage() {
   useEffect(() => {
     let alive = true
     async function load() {
-      setLoading(true); setError(null)
+      setLoading(true)
+      setError(null)
       try {
-        // 1) Preferred: dates[] (some backends honor this)
         const res1 = await Api.games({ dates: date, postseason: true, per_page: 500 })
         let list: Game[] = (res1.data || []).filter(g => ymdInTZ(g.date, userTZ) === date)
-
-        // 2) Fallback: start_date/end_date (some backends only honor this)
         if (list.length === 0) {
           const res2 = await Api.games({ start_date: date, end_date: date, postseason: true, per_page: 500 })
           list = (res2.data || []).filter(g => ymdInTZ(g.date, userTZ) === date)
         }
-
-        // 3) Sort chronologically
         list.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-
         if (alive) setGames(list)
       } catch (e: any) {
         if (alive) setError(String(e?.message || e))
@@ -48,40 +42,48 @@ export default function MatchupsPage() {
     return () => { alive = false }
   }, [date])
 
-  const filtered = filterTeam === 'all'
-    ? games
-    : games.filter(g => g.home_team.id === filterTeam || g.visitor_team?.id === filterTeam)
+  const filtered = useMemo(() => (
+    filterTeam === 'all'
+      ? games
+      : games.filter(g => g.home_team.id === filterTeam || g.visitor_team?.id === filterTeam)
+  ), [games, filterTeam])
 
   return (
-    <div className="pb-20 p-3 max-w-2xl mx-auto">
-      <header className="mb-3 space-y-2">
-        <div className="font-bold">Matchups</div>
-        <input
-          type="date"
-          value={date}
-          onChange={e => setDate(e.target.value)}
-          className="input"
-        />
-        <select
-          value={filterTeam}
-          onChange={e => setFilterTeam(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-          className="input"
-        >
-          <option value="all">All teams</option>
-          {teams.map(t => <option key={t.id} value={t.id}>{t.full_name}</option>)}
-        </select>
-      </header>
+    <div className="space-y-5 pb-4">
+      <section className="card-panel p-5">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+          <div>
+            <div className="eyebrow">Matchups</div>
+            <h1 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl">Daily matchup grid</h1>
+            <p className="mt-2 max-w-2xl text-sm text-gray-300">Filter the board by date and club to zero in on exactly the games you want to track.</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[520px]">
+            <label className="block">
+              <div className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Date</div>
+              <input type="date" value={date} onChange={e => setDate(e.target.value)} className="input" />
+            </label>
+            <label className="block">
+              <div className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Team filter</div>
+              <select value={filterTeam} onChange={e => setFilterTeam(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="input">
+                <option value="all">All teams</option>
+                {teams.map(t => <option key={t.id} value={t.id}>{t.full_name}</option>)}
+              </select>
+            </label>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="pill">{filtered.length} visible game{filtered.length === 1 ? '' : 's'}</span>
+          <span className="pill">{teams.length} teams loaded</span>
+        </div>
+      </section>
 
-      {loading && <div className="text-center text-gray-400">Loading…</div>}
-      {error && <div className="text-center text-seam">{error}</div>}
+      {loading && <div className="card text-center text-gray-300">Loading…</div>}
+      {error && <div className="card text-center text-red-300">{error}</div>}
+      {!loading && !error && filtered.length === 0 && <div className="card text-center text-gray-300">No games on this date.</div>}
 
-      {!loading && !error && filtered.length === 0 && (
-        <div className="text-center text-gray-400">No games on this date.</div>
-      )}
-
-      <div className="space-y-3">
-        {filtered.map(g => (<GameCard key={g.id} game={g} forceYmd={date} />))}
-      </div>
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {filtered.map(g => <GameCard key={g.id} game={g} forceYmd={date} />)}
+      </section>
     </div>
   )
 }

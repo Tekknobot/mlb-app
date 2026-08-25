@@ -1,102 +1,65 @@
 import { Link } from 'react-router-dom'
 import { Game } from '@/services/api'
-import { format } from 'date-fns'
-import { ymdInTZ, userTZ } from '@/lib/tz' // ✅ use local timezone YMD
+import { ymdInTZ, userTZ } from '@/lib/tz'
+import TeamLogo from '@/components/TeamLogo'
+import { teamAbbr } from '@/lib/mlb-assets'
 
-function labelFromYmd(ymd: string) {
-  return format(new Date(`${ymd}T12:00:00`), 'EEE, MMM d')
+function gameTimeLabel(iso?: string, status?: string) {
+  if (!iso) return status || 'Scheduled'
+  const s = (status || '').toLowerCase()
+  if (s.includes('final') || s.includes('progress') || s.includes('live') || s.includes('delay')) return status || ''
+  return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(new Date(iso))
 }
 
-const TEAM_COLORS: Record<string, string> = {
-  BAL: '#DF4601', BOS: '#BD3039', NYY: '#0C2340', TB: '#092C5C', TOR: '#134A8E',
-  CWS: '#27251F', CLE: '#00385D', DET: '#0C2C56', KC: '#004687', MIN: '#0C2340',
-  HOU: '#002D62', LAA: '#BA0021', OAK: '#003831', SEA: '#0C2C56', TEX: '#003278',
-  ATL: '#13274F', MIA: '#00A3E0', NYM: '#002D72', PHI: '#E81828', WSH: '#AB0003',
-  CHC: '#0E3386', CIN: '#C6011F', MIL: '#12284B', PIT: '#FDB827', STL: '#C41E3A',
-  ARI: '#A71930', COL: '#33006F', LAD: '#005A9C', SD: '#2F241D', SF: '#FD5A1E',
-}
-
-function contrastText(hex: string): string {
-  const c = hex.replace('#', '')
-  const r = parseInt(c.substring(0, 2), 16)
-  const g = parseInt(c.substring(2, 4), 16)
-  const b = parseInt(c.substring(4, 6), 16)
-  const yiq = (r * 299 + g * 587 + b * 114) / 1000
-  return yiq >= 160 ? '#111827' : '#ffffff'
-}
-
-function teamAbbr(team?: { abbreviation?: string; display_name?: string }): string {
-  if (!team) return '—'
-  if (team.abbreviation) return team.abbreviation.toUpperCase()
-  const dn = (team.display_name || '').trim()
-  if (!dn) return '—'
-  return dn.split(/\s+/).map(s => s[0]).join('').slice(0, 3).toUpperCase()
-}
-
-function TeamPill({ abbr }: { abbr: string }) {
-  const color = TEAM_COLORS[abbr] || '#64748b'
-  const text = contrastText(color)
+function TeamRow({
+  team,
+  score,
+  side,
+}: {
+  team?: Game['home_team'] | Game['visitor_team']
+  score?: number
+  side: 'Away' | 'Home'
+}) {
+  const abbr = teamAbbr(team)
   return (
-    <span
-      className="pill"
-      style={{ backgroundColor: color, color: text, border: '1px solid rgba(255,255,255,0.25)' }}
-      title={abbr}
-    >
-      {abbr}
-    </span>
+    <div className="flex items-center gap-3 rounded-2xl border border-white/8 bg-white/[0.04] p-3">
+      <TeamLogo team={team} size={42} />
+      <div className="min-w-0 flex-1">
+        <div className="text-[11px] uppercase tracking-[0.16em] text-gray-400">{side}</div>
+        <div className="truncate font-semibold text-white">{team?.full_name || team?.display_name || '—'}</div>
+        <div className="text-xs text-gray-400">{abbr}</div>
+      </div>
+      <div className="text-3xl font-black tracking-tight text-white">{score ?? '—'}</div>
+    </div>
   )
 }
 
-export default function GameCard({
-  game,
-  forceYmd,
-}: {
-  game: Game
-  forceYmd?: string
-}) {
+export default function GameCard({ game, forceYmd }: { game: Game; forceYmd?: string }) {
   const ymdLocal = forceYmd ?? ymdInTZ(game.date, userTZ)
-  const label = labelFromYmd(ymdLocal)
+  const label = new Intl.DateTimeFormat(undefined, { weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(`${ymdLocal}T12:00:00`))
   const dateParam = encodeURIComponent(ymdLocal)
-
-  const url = `/game/${game.id}?date=${dateParam}&homeId=${game.home_team.id}${
-    game.visitor_team ? `&awayId=${game.visitor_team.id}` : ''
-  }`
-
-  const statusLabel = (game as any)?.status || 'Scheduled'
-
-  const awayAbbr = teamAbbr(game.visitor_team)
-  const homeAbbr = teamAbbr(game.home_team)
+  const url = `/game/${game.id}?date=${dateParam}&homeId=${game.home_team.id}${game.visitor_team ? `&awayId=${game.visitor_team.id}` : ''}`
+  const statusLabel = game.status || 'Scheduled'
 
   return (
-    <Link to={url} className="block">
-      <div className="card hover:opacity-95 active:opacity-90">
-        <div className="flex items-center justify-between">
-          <div className="font-semibold">{label}</div>
-          <span className="pill" data-status={statusLabel}>
-            {statusLabel}
-          </span>
+    <Link to={url} className="block h-full">
+      <div className="card h-full transition duration-150 hover:-translate-y-0.5 hover:border-white/20 hover:bg-infield">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div className="text-sm font-semibold text-white">{label}</div>
+            <div className="text-xs text-gray-400">Game #{game.id}</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="pill" data-status={statusLabel}>{statusLabel}</span>
+            <span className="pill">{gameTimeLabel(game.date, statusLabel)}</span>
+          </div>
         </div>
 
         <div className="hr-seam" />
 
-        {/* ⬇️ changed items-center -> items-start */}
-        <div className="mt-2 grid grid-cols-2 gap-3 items-start">
-          <div className="text-right">
-            <div className="flex items-center justify-end gap-2">
-              <div className="text-sm text-gray-300">Away</div>
-              <TeamPill abbr={awayAbbr} />
-            </div>
-            <div className="font-bold">{game.visitor_team?.full_name}</div>
-            <div className="text-2xl font-bold text-chalk">{game.visitor_team_score ?? ''}</div>
-          </div>
-          <div className="text-left">
-            <div className="flex items-center justify-start gap-2">
-              <div className="text-sm text-gray-300">Home</div>
-              <TeamPill abbr={homeAbbr} />
-            </div>
-            <div className="font-bold">{game.home_team.full_name}</div>
-            <div className="text-2xl font-bold text-chalk">{game.home_team_score ?? ''}</div>
-          </div>
+        <div className="space-y-3">
+          <TeamRow team={game.visitor_team || game.away_team} score={game.visitor_team_score ?? game.away_team_score} side="Away" />
+          <TeamRow team={game.home_team} score={game.home_team_score} side="Home" />
         </div>
       </div>
     </Link>

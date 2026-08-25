@@ -2,58 +2,45 @@ import { Link } from 'react-router-dom'
 
 export default function PrivacyPage() {
   return (
-    <div className="p-3 max-w-2xl mx-auto space-y-3 pb-20">
-      <header className="flex items-center justify-between">
-        <h1 className="font-semibold">Privacy Policy</h1>
-        <Link to="/" className="btn-ghost">Back</Link>
+    <div className="space-y-5 pb-4">
+      <header className="card-panel p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="eyebrow">Privacy</div>
+            <h1 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl">Privacy Policy</h1>
+          </div>
+          <Link to="/" className="btn-ghost">Back to dashboard</Link>
+        </div>
       </header>
 
-      <section className="card space-y-2">
-        <div className="text-xs text-gray-400">Last updated: Oct 11, 2025</div>
+      <section className="card space-y-3">
+        <div className="text-xs text-gray-400">Last updated: Aug 25, 2026</div>
         <p className="text-gray-200">
-          This Privacy Policy explains how SLUGMODE handles your information.
-          In short: we don’t collect personal data, we don’t run analytics, we don’t use tracking cookies, and we don’t have user accounts.
+          This Privacy Policy explains how PennantGrid handles your information.
+          In short: there are no user accounts, no third-party sports-data logins, and no intentional personal data collection.
         </p>
       </section>
 
-      <section className="card space-y-2">
-        <h2 className="font-semibold">No Accounts</h2>
-        <p className="text-gray-200">
-          The Service does not offer user registration or sign-in. We do not create or maintain user profiles.
-        </p>
-      </section>
+      <section className="grid gap-4 lg:grid-cols-2">
+        <section className="card space-y-2">
+          <h2 className="font-semibold">No Accounts</h2>
+          <p className="text-gray-200">The Service does not offer user registration or sign-in. We do not create or maintain user profiles.</p>
+        </section>
 
-      <section className="card space-y-2">
-        <h2 className="font-semibold">No Personal Data Collection</h2>
-        <p className="text-gray-200">
-          We do not intentionally collect, store, or process personal information. There are no forms asking for your
-          name, email address, or other identifiers.
-        </p>
-      </section>
+        <section className="card space-y-2">
+          <h2 className="font-semibold">No Personal Data Collection</h2>
+          <p className="text-gray-200">We do not intentionally collect or store personal information such as names, emails, or account identifiers.</p>
+        </section>
 
-      <section className="card space-y-2">
-        <h2 className="font-semibold">Server Logs (Minimal & Transient)</h2>
-        <p className="text-gray-200">
-          Like most websites, our hosting environment may automatically generate basic, transient logs (e.g., IP address,
-          request URL, timestamp, and user-agent) to operate and secure the Service. We do not use these logs to identify
-          you, and we do not retain them longer than necessary for security and reliability.
-        </p>
-      </section>
+        <section className="card space-y-2">
+          <h2 className="font-semibold">Minimal Server Logs</h2>
+          <p className="text-gray-200">Like most websites, hosting infrastructure may generate short-lived technical logs for security and reliability.</p>
+        </section>
 
-      <section className="card space-y-2">
-        <h2 className="font-semibold">Third-Party Content</h2>
-        <p className="text-gray-200">
-          The Service may display third-party content (e.g., scores or team data). Any external links you follow are
-          governed by those sites’ own privacy policies.
-        </p>
-      </section>
-
-      <section className="card space-y-2">
-        <h2 className="font-semibold">Changes to This Policy</h2>
-        <p className="text-gray-200">
-          If we make material changes (e.g., enabling accounts or analytics), we will update this page and revise the
-          “Last updated” date above.
-        </p>
+        <section className="card space-y-2">
+          <h2 className="font-semibold">Third-Party Content</h2>
+          <p className="text-gray-200">The Service may display third-party content such as scores, logos, and player images. External links are governed by their own privacy policies.</p>
+        </section>
       </section>
     </div>
   )
