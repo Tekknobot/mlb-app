@@ -523,8 +523,21 @@ export default function GameDetailsPage() {
         )}
       </Section>
 
-      {/* Recent form summary */}
+      {/* Recent form summary — keep the same left/right order as the matchup above: Away, then Home. */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <Section title={`Recent form — Away (${abbr(away.data)}) last 14–30d`}>
+          {awayForm ? (
+            <div className="space-y-2">
+              <StatRow label="Record" value={`${awayForm.wins}-${awayForm.losses}`} />
+              <StatRow label="Streak" value={awayForm.streak} />
+              <StatRow label="Run diff" value={`${awayForm.runsFor - awayForm.runsAgainst >= 0 ? '+' : ''}${awayForm.runsFor - awayForm.runsAgainst}`} />
+              <StatRow label="Last 5" value={awayForm.last5 || '—'} />
+              <div className="hr-seam" />
+              <TinyGamesList games={recentAway.data} focusTeamId={awayId} />
+            </div>
+          ) : <div className="text-gray-400">Loading…</div>}
+        </Section>
+
         <Section title={`Recent form — Home (${abbr(home.data)}) last 14–30d`}>
           {homeForm ? (
             <div className="space-y-2">
@@ -534,19 +547,6 @@ export default function GameDetailsPage() {
               <StatRow label="Last 5" value={homeForm.last5 || '—'} />
               <div className="hr-seam" />
               <TinyGamesList games={recentHome.data} focusTeamId={homeId} />
-            </div>
-          ) : <div className="text-gray-400">Loading…</div>}
-        </Section>
-
-        <Section title={`Recent form — Away (${abbr(away.data)}) last 14–30d`}>
-          {awayForm ? (
-            <div className="space-y-2">
-              <StatRow label="Record" value={`${awayForm.wins}-${awayForm.losses}`} />
-              <StatRow label="Streak" value={awayForm.streak} />
-              <StatRow label="Run diff" value={`${awayForm.runsFor - awayForm.runsAgainst >= 0 ? '+' : ''}${awayForm.runsFor - awayForm.runsAgainst}`} />
-              <StatRow label="Last 5" value={awayForm.last5 || '—'} /> {/* ✅ added */}
-              <div className="hr-seam" />
-              <TinyGamesList games={recentAway.data} focusTeamId={awayId} />
             </div>
           ) : <div className="text-gray-400">Loading…</div>}
         </Section>
